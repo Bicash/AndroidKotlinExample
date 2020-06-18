@@ -48,10 +48,21 @@ object UserHolder {
         }
     }
 
-//    fun importUsers(list: List<String>) : List<User> {
-//
-//    }
-
+    fun importUsers(list: List<String>) : List<User> {
+        val result: List<User> = emptyList()
+        for (user in list) {
+            val userData = user.split(";")
+            val fullName: String = userData[0].trim()
+            val email: String = userData[1].trim()
+            val password = userData[2].trim().split(":")
+            val salt: String = password[0].trim()
+            val passHash: String = password[1].trim()
+            val phone: String = userData[3].trim()
+            val u = User.makeFromCsvUser(fullName, email, salt, passHash, phone).also { user -> map[user.login] = user }
+            result.toMutableList().add(u)
+        }
+        return result
+    }
 
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     fun clearHolder(){

@@ -184,4 +184,24 @@ class ExampleUnitTest {
         Assert.assertNotEquals(oldAccess, user.accessCode!!)
         Assert.assertEquals(expectedInfo, successResult)
     }
+
+    @Test
+    fun importScv() {
+        val holder = UserHolder
+        val usersCsvList = listOf(
+            " John Doe ;JohnDoe@unknow.com;[B@7591083d:c6adb4becdc64e92857e1e2a0fd6af84;;"
+//            "Jim Mac;Jim@unknow.com;[B@75910fke:c6adb4becdc64e9fmv7e1e2a0fd6af84;;",
+//            " Elton John ;Elton@unknow.com;[B@759fwefd:c6adb4becdc64e92857e1e2a0fd6af84;;",
+//            " Tony Stark ;Stark@unknow.com;[Bfre91083d:c6adb4becdc64e9e217e1e2a0fd6af84;;",
+//            " Amy Doe ;Amy@unknow.com;[B@7591083d:c6asc4becdc64e92127ek22a0fd6af84;;",
+//            "Zeus;Zeus@unknow.com;[B@7591083d:c6adb4becdc64e9281fe1e2a0fdvef84;;",
+//            "Jony Sqw;Jony@Zeus.com;[B@7wq1083d:c6adb4becdc64e92857e1e2a0fd6af84;;",
+//            " Qwer Lou ;Qwer@unknow.com;[ee7ds1083d:c6adb4becdc64e92857e1e2l2fd6af84;;"
+        )
+        val usersList = holder.importUsers(usersCsvList)
+        for (user in usersList) {
+            println(user.userInfo)
+            holder.loginUser(user.login, "c6adb4becdc64e92857e1e2a0fd6af84")
+        }
+    }
 }

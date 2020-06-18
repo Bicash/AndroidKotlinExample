@@ -37,9 +37,7 @@ class User private constructor(
         }
         get() = _login!!
 
-    private val salt: String by lazy {
-        ByteArray(16).also { SecureRandom().nextBytes(it) }.toString()
-    }
+    private lateinit var salt: String
 
     private lateinit var passwordHash: String
 
@@ -71,11 +69,27 @@ class User private constructor(
         sendAccessCodeToUser(rawPhone, code)
     }
 
+    //for csv
+    constructor(
+        firstName: String,
+        lastName: String?,
+        email: String?,
+        salt: String,
+        passwordHash: String,
+        rawPhone: String?
+    ): this(firstName, lastName, email = email, rawPhone = rawPhone, meta = mapOf("src" to "csv")) {
+        println("Secondary csv constructor")
+        this.salt = salt
+        this.passwordHash = passwordHash
+    }
+
     init {
         println("First init block, primary constructor was called")
 
         check(!firstName.isBlank()) { "FirstName must be not blank"}
         check(email.isNullOrBlank() || rawPhone.isNullOrBlank()) { "Email or phone must be not blank" }
+
+        salt = ByteArray(16).also { SecureRandom().nextBytes(it) }.toString()
 
         phone = rawPhone
         login = when {
@@ -150,6 +164,21 @@ class User private constructor(
                 !email.isNullOrBlank() && !password.isNullOrBlank() -> User(firstName, lastName, email, password)
                 else -> throw IllegalArgumentException("Email or phone must be not null or blank")
             }
+        }
+
+        fun makeFromCsvUser(
+            fullName: String?,
+            email: String?,
+            salt: String,
+            passwordHash: String,
+            phone: String?
+        ): User {
+            val (firstName, lastName) = fullName!!.fullNameToPair()
+
+            val _email = if (email!!.isBlank()) null else email
+            val _phone = if (phone!!.isBlank()) null else phone
+
+            return User(firstName, lastName, _email, salt, passwordHash, _phone)
         }
 
         private fun String.fullNameToPair(): Pair<String, String?> {
